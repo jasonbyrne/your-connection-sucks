@@ -1,0 +1,32 @@
+
+#player {
+    position: relative;
+    margin-top: 16px;
+}
+
+#player video {
+    width: 1280px;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.connectionAlert {
+    position: absolute;
+    top: 4%;
+    left: 4%;
+    right: 4%;
+    opacity: .9;
+    line-height: 24px;
+}
+
+.connectionAlert .icon {
+    vertical-align: middle;
+    margin-right: 8px;
+    width: 24px;
+    height: 24px;
+}
+
+.connectionAlert .details {
+    font-size: 10px;
+    font-style: italic;
+}
