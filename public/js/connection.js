@@ -4,6 +4,8 @@ $(function () {
     let wasSlowConnection = false;
     let lastBars = null;
     const $player = $('#player');
+    const bandwidthTestFile = 'https://stream-archive-input-test.s3.amazonaws.com/test.jpg';
+    const bandwidthTestDownloadSize = 4995374;
 
     // Image preloader
     [
@@ -15,6 +17,34 @@ $(function () {
         var img = new Image();
         img.src = uri;
     });
+
+    function getDownloadSpeed(callback) {
+        const startTime = (new Date()).getTime();
+        const download = new Image();
+        console.log(`Started download at ${startTime}`);
+        download.onload = function () {
+            const endTime = (new Date()).getTime();
+            const duration = (endTime - startTime) / 1000;
+            const bitsLoaded = bandwidthTestDownloadSize * 8;
+            const speedBps = (bitsLoaded / duration).toFixed(2);
+            const speedKbps = (speedBps / 1024).toFixed(2);
+            const speedMbps = (speedKbps / 1024).toFixed(2);
+            console.log(`Finished download at ${endTime}`);
+            callback({
+                mb: bitsLoaded / 1024,
+                length: bitsLoaded,
+                seconds: duration,
+                bps: speedBps,
+                kbps: speedKbps,
+                mbps: speedMbps
+            });
+        }
+        download.onerror = function (err, msg) {
+            alert('Speed test failed.');
+            console.log(msg, err);
+        }
+        download.src = bandwidthTestFile + '?nnn=' + startTime;
+    }
 
     function showConnectionAlert(bars) {
         const isSlowConnection = (bars < 3);
@@ -121,11 +151,11 @@ $(function () {
                 return 3;
             }
             // 1 Bar
-            if (/2g/.test(me.effectiveType) || me.downlink < 1) {
+            if (/2g/.test(me.effectiveType)) {
                 return 1;
             }
             // 2 Bars
-            if (/3g/.test(me.effectiveType) || me.downlink < 5) {
+            if (/3g/.test(me.effectiveType)) {
                 return 2;
             }
             // 3 Bars
@@ -188,14 +218,24 @@ $(function () {
 
     function getDetails(e) {
         e.preventDefault();
-        const conn = getConnection();
-        alert('' +
-            `Browser: ${browser}
-Platform: ${os}
-Connection Speed: ${conn.getConnectionSpeed()}
-Effective Connetion: ${conn.effectiveType}
-User Agent: ${navigator.userAgent}
-                `);
+        if (confirm('Run a speed test?')) {
+            const $video = $('video');
+            console.log('Pausing video');
+            $video[0].pause();
+            console.log('Running speed test...');
+            getDownloadSpeed(function (speed) {
+                console.log('Speed test complete', speed);
+                const conn = getConnection();
+                alert('' +
+                    `Browser: ${browser}
+    Platform: ${os}
+    Connection Speed: ${Math.round(speed.mbps * 100) / 100} mbps
+    Effective Connection: ${conn.effectiveType}
+    User Agent: ${navigator.userAgent}
+                    `);
+                $video[0].play();
+            });
+        }
     };
 
     $(document).bind('keydown', function (e) {
@@ -205,5 +245,6 @@ User Agent: ${navigator.userAgent}
     });
 
     $('body').on('click', '.connectionAlert .details', getDetails);
+    $('body').on('click', '.runConnectionTest', getDetails);
 
 });
