@@ -1,7 +1,7 @@
 
 (function () {
     const video = document.querySelector('#player video');
-    const stream = 'http://cdnapi.kaltura.com/p/931702/sp/93170200/playManifest/entryId/1_oorxcge2/format/applehttp/protocol/http/uiConfId/28428751/a.m3u8';
+    const stream = 'https://cdnsecakmi.kaltura.com/p/931702/sp/93170200/playManifest/entryId/0_mz5ekp8u/protocol/https/format/applehttp/flavorIds/0_muy92s9x,0_q49nnqee,0_bqhpvgm4,0_s94m2wo7/a.m3u8?uiConfId=43922141&playSessionId=d361e3d0-d56e-5b36-3a01-69e6bd95ac61:0fedc7e3-294c-c88d-417a-9404f0036a05&referrer=aHR0cHM6Ly93d3cud2VhdGhlcm5hdGlvbnR2LmNvbS92aWRlby8=&clientTag=html5:v0.43.0';
 
     if (Hls.isSupported()) {
         var hls = new Hls();
